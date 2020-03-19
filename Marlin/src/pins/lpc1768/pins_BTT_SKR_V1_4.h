@@ -26,6 +26,14 @@
 #endif
 
 //
+// EEPROM
+//
+#if NONE(FLASH_EEPROM_EMULATION, SDCARD_EEPROM_EMULATION)
+  #define FLASH_EEPROM_EMULATION
+  //#define SDCARD_EEPROM_EMULATION
+#endif
+
+//
 // SD Connection
 //
 #ifndef SDCARD_CONNECTION
@@ -79,7 +87,9 @@
     #define Z_MIN_PIN      P1_00   // PWRDET
   #endif
 #else
-  #define Z_STOP_PIN       P1_27   // Z-STOP
+  #ifndef Z_STOP_PIN
+    #define Z_STOP_PIN     P1_27   // Z-STOP
+  #endif
 #endif
 
 //
@@ -151,11 +161,6 @@
 #define TEMP_BED_PIN       P0_25_A2   // A0 (T0) - (67) - TEMP_BED_PIN
 
 //
-// Include common SKR pins
-//
-#include "pins_BTT_SKR_common.h"
-
-//
 // Software SPI pins for TMC2130 stepper drivers
 //
 #if ENABLED(TMC_USE_SW_SPI)
@@ -170,7 +175,7 @@
   #endif
 #endif
 
-#if HAS_TMC220x
+#if HAS_TMC_UART
   /**
    * TMC2208/TMC2209 stepper drivers
    *
@@ -264,7 +269,10 @@
     #define LCD_PINS_D4    P1_20
 
     #define LCD_SDSS       P0_16   // (16) J3-7 & AUX-4
-    #define SD_DETECT_PIN  P1_31   // (49) (NOT 5V tolerant)
+
+    #if SD_CONNECTION_IS(LCD)
+      #define SD_DETECT_PIN P1_31  // (49) (NOT 5V tolerant)
+    #endif
 
     #if ENABLED(FYSETC_MINI_12864)
       #define DOGLCD_CS    P1_18
@@ -329,3 +337,8 @@
  *   P0_27  (57) (Open collector)
  *   P0_28  (58) (Open collector)
  */
+
+//
+// Include common SKR pins
+//
+#include "pins_BTT_SKR_common.h"
