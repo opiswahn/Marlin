@@ -84,7 +84,7 @@
 
 #if defined(SERIAL_USB) && !HAS_SD_HOST_DRIVE
   USBSerial SerialUSB;
-  DefaultSerial MSerial(true, SerialUSB);
+  DefaultSerial1 MSerial0(true, SerialUSB);
 
   #if ENABLED(EMERGENCY_PARSER)
     #include "../libmaple/usb/stm32f1/usb_reg_map.h"
@@ -107,7 +107,7 @@
       len = usb_cdcacm_peek(buf, total);
 
       for (uint32 i = 0; i < len; i++)
-        emergency_parser.update(MSerial.emergency_state, buf[i + total - len]);
+        emergency_parser.update(MSerial0.emergency_state, buf[i + total - len]);
     }
   #endif
 #endif
@@ -293,7 +293,7 @@ void HAL_init() {
   #if PIN_EXISTS(USB_CONNECT)
     OUT_WRITE(USB_CONNECT_PIN, !USB_CONNECT_INVERTING);  // USB clear connection
     delay(1000);                                         // Give OS time to notice
-    OUT_WRITE(USB_CONNECT_PIN, USB_CONNECT_INVERTING);
+    WRITE(USB_CONNECT_PIN, USB_CONNECT_INVERTING);
   #endif
   TERN_(POSTMORTEM_DEBUGGING, install_min_serial());    // Install the minimal serial handler
 }
@@ -453,6 +453,8 @@ void analogWrite(pin_t pin, int pwm_val8) {
     analogWrite(uint8_t(pin), pwm_val8);
 }
 
-void flashFirmware(const int16_t) { nvic_sys_reset(); }
+void HAL_reboot() { nvic_sys_reset(); }
+
+void flashFirmware(const int16_t) { HAL_reboot(); }
 
 #endif // __STM32F1__

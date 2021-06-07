@@ -41,7 +41,7 @@
 #endif
 
 #if ENABLED(ESP3D_WIFISUPPORT)
-  DefaultSerial MSerial(false, Serial2Socket);
+  DefaultSerial1 MSerial0(false, Serial2Socket);
 #endif
 
 // ------------------------
@@ -140,6 +140,8 @@ void HAL_idletask() {
 void HAL_clear_reset_source() { }
 
 uint8_t HAL_get_reset_source() { return rtc_get_reset_reason(1); }
+
+void HAL_reboot() { ESP.restart(); }
 
 void _delay_ms(int delay_ms) { delay(delay_ms); }
 
